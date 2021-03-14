@@ -31,9 +31,9 @@ def getData():
     sensorLabel=jsondata['label'] # This is the label that was assigned by app developer. You need to as the config mgr to get the id of the sensor which the is mapped to
 	
     url = "http://localhost:5112/getMapping/"
-
+    mapping={'label':sensorLabel}
 	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-	res = requests.post(url, data=json.dumps(sensorLabel), headers=headers)
+	res = requests.post(url, data=json.dumps(mapping), headers=headers)
 	
 	response_dict = json.loads(res.text)
 	print(response_dict)
@@ -44,6 +44,9 @@ def getData():
     data_dict[sensorID]=[]
     result ={'data':dataToSend}
     return json.dumps(result)
+
+
+
     # return dataToSend
     
 
