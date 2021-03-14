@@ -7,45 +7,47 @@ from flask import request
 import json
 from flask import render_template
 from flask import jsonify
+import zipfile
+import os
 
 app = Flask(__name__)
 ids = 0
 
+
+
+
 @app.route('/')
 def submitApplication():
     return render_template('home.html')
-    # jsondata = request.get_json()
-	
-    # Write your code here to assign id to the appln
-
-    # once the data is received and an id is associated with it , send the data with id to deployer to verify
-
-
-    # return if the app was deployed succesfully after verification from the deployers end
-    # return abc
 
 @app.route('/receiveFile/',methods=['POST', 'GET'])
 def receiveFile():
-    global ids
-	if request.method == 'POST':
-		f = request.files['file']
-        f.save(f.filename)
-         
-		url = "http://localhost:5005/verify/"
+	global ids
 
-        data = {"AppID": ids}
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        res = requests.post(url, data=json.dumps(data), headers=headers)
+	f = request.files["file"]
+	f.filename  = str(ids)
+	f.save("./Repository/"+ f.filename+".zip")
 
-        response_dict = json.loads(res.text)
+	with zipfile.ZipFile("./Repository/"+ f.filename+".zip","r") as zip_ref:
+		zip_ref.extractall("./Repository/"+ f.filename)
+	
+	os.remove("./Repository/"+ f.filename+".zip")
 
-        if response_dict == "ok":
-            ids+=1
-        else:
-            
+	url = "http://localhost:5005/verify/"
+
+	data = {"AppID": ids}
+	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+	res = requests.post(url, data=json.dumps(data), headers=headers)
+
+	if res =="ok":
+		ids+=1
+	else:
+		pass
+		# os.remove("./Repository/"+ f.filename)
+	
+	ids+=1
 
 	return "File Has been Received"
-
 
 if __name__ == "__main__":
     # recording_on = Value('b', True)

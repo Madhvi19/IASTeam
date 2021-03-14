@@ -15,9 +15,10 @@ def verify():
 	jsondata = request.get_json()
 
 	
-	print("File verified")
+	print("File verified", jsondata)
 	# Write your code here
-	#if ok kisi application Repository naam ke folder me id naam ke folder me save krwana hai 
+	#if ok kisi application Repository naam ke folder me id naam ke folder me save krwana hai
+	
 	return "ok"
 
 
