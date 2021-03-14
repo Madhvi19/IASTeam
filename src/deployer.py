@@ -8,20 +8,21 @@ import json
 from flask import render_template
 from flask import jsonify
 
-
-
-
-
+app = Flask(__name__)
 
 @app.route('/verify/',methods=['POST'])
 def verify():
 	jsondata = request.get_json()
 
+	
+	print("File verified")
 	# Write your code here
-	return ok/not ok
+	#if ok kisi application Repository naam ke folder me id naam ke folder me save krwana hai 
+	return "ok"
+
 
 if __name__ == "__main__":
    # recording_on = Value('b', True)
    
-   app.run(debug=True,port=5003)
+   app.run(debug=True,port=5005)
    

@@ -1,0 +1,11 @@
+{"Temperature":
+    {   
+        "deviceIO":"input",
+        "dataType":"float",
+        "model":"xyz",
+        "sensor_location": "Building-0464",
+	    "cpu_requirement": 0.0,
+	    "memory_requirement": 0
+    }
+}
+
