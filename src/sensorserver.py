@@ -49,4 +49,7 @@ def getData():
 
     # return dataToSend
     
-
+if __name__ == "__main__":
+   # recording_on = Value('b', True)
+   
+   app.run(debug=True,port=5111)
