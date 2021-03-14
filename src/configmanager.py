@@ -12,12 +12,12 @@ import os
 import glob
 
 
-
-typeMapping={Temperature:[t1,t2,t3,t4],InfraRed:[i1,i2,i3,i4]}
+app = Flask(__name__)
+typeMapping={"Temperature":["t1","t2","t3","t4"],"InfraRed":["i1","i2","i3","i4"]}
 
 #pop whenever anything is used and put that in used dict
 
-used={Temperature:[],Infrared:[]}
+used={"Temperature":[],"InfraRed":[]}
 #store the label to physical mappinf here
 labelMapping={}
 
@@ -37,28 +37,31 @@ def bindSensor(appID,data):
 
 
 
-@app.route('/runApp',methos=['POST','GET'])
+@app.route('/runApp/',methods=['POST','GET'])
 def runApp():
 
     jsondata = request.get_json()
-    appID=jsondata('appid')
+    appID=jsondata['appid']
+    print("*************", appID)
     data={}
     labels={}
     
     #form the path name and get the contents .json file to know what is to be run
-    for filename in glob.glob('Repository/'+str(appID)):
+    for filename in glob.glob('/home/madhvi/Semester4/InternalsOfApplicationServer/Hackathon1/IASTeam/src/Repository'+str(appID)):
+        print("*******************", filename)
         if(filename=='Contents.json'):
             data=json.load(filename)
+            print("******************",data)
         if(filename=='Labels.json'):
             labels=json.load(filename)
-
+            print("*********************",labels)
 
     mainFile=data['MainFile']
     status=bindSensor(appID,labels)
     os.system('python3 '+mainFile)
     # os.system('python my_file.py')
 
-
+    # return "Temperature is high"
 
 @app.route('/getMapping/',methods=['POST'])
 def getMapping():

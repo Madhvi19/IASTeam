@@ -14,8 +14,6 @@ app = Flask(__name__)
 ids = 0
 
 
-
-
 @app.route('/')
 def submitApplication():
     return render_template('home.html')
@@ -25,6 +23,7 @@ def receiveFile():
 	global ids
 
 	f = request.files["file"]
+	ogName = f
 	f.filename  = str(ids)
 	f.save("./Repository/"+ f.filename+".zip")
 
