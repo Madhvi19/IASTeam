@@ -18,7 +18,7 @@ def on_send_error(excp):
     log.error('I am an errback', exc_info=excp)
 
 def sendToSLM(serviceName):
-    topicName = "numtest"
+    topicName = "restartService"
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
@@ -35,7 +35,7 @@ def sendToSLM(serviceName):
 
 def registerServices():
     while True:
-        consumer = KafkaConsumer('numtest',
+        consumer = KafkaConsumer('toMonitorRegister',
         bootstrap_servers=['localhost:9092'],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
@@ -49,13 +49,30 @@ def registerServices():
             timestamp=str(message.timestamp)
             print((message.value))
             #if len(message.value)==2:
-            mess = message.value['number']
+            # mess = message.value['number']
             name = message.value['name']
-            mes={"num":mess,"time":timestamp,"name":name}
+            mes={"time":timestamp,"name":name}
             collection.insert_one(mes)                      ##INsert into collections db
             #print('{} added to {}'.format(mes, collection))
         
 
+
+def checkHeartBeat():
+    while(1):
+        consumer = KafkaConsumer('toMonitorHeartBeat',
+        bootstrap_servers=['localhost:9092'],
+        auto_offset_reset='earliest',
+        enable_auto_commit=True,
+        group_id='my-group',
+        value_deserializer=lambda x: loads(x.decode('utf-8')))
+
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        collection = client.numtest.numtest
+    
+        for message in consumer:
+            name = message.value['name']
+            timestamp = message.timestamp[0:-3]
+            collection.update_one({'name':name},"$set":{'name':name, "time":timestamp})
 
 
 
@@ -95,3 +112,6 @@ if __name__=="__main__":
     #th.join()
     tq=threading.Thread(target=getStatus)
     tq.start()
+
+    ts=threading.Thread(target=checkHeartBeat)
+    ts.start()
