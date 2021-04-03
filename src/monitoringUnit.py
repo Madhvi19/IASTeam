@@ -34,27 +34,27 @@ def sendToSLM(serviceName):
 
 
 def registerServices():
-    consumer = KafkaConsumer('numtest',
-    bootstrap_servers=['localhost:9092'],
-    auto_offset_reset='earliest',
-    enable_auto_commit=True,
-    group_id='my-group',
-    value_deserializer=lambda x: loads(x.decode('utf-8')))
+    while True:
+        consumer = KafkaConsumer('numtest',
+        bootstrap_servers=['localhost:9092'],
+        auto_offset_reset='earliest',
+        enable_auto_commit=True,
+        group_id='my-group',
+        value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    collection = client.numtest.numtest
-    for message in consumer:
-        #print(message)
-        timestamp=str(message.timestamp)
-        #print(message)
-        #print(len(message.value))
-        if len(message.value)==2:
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        collection = client.numtest.numtest
+        for message in consumer:
+            #print(message)
+            timestamp=str(message.timestamp)
+            print((message.value))
+            #if len(message.value)==2:
             mess = message.value['number']
             name = message.value['name']
             mes={"num":mess,"time":timestamp,"name":name}
             collection.insert_one(mes)                      ##INsert into collections db
             #print('{} added to {}'.format(mes, collection))
-     
+        
 
 
 
@@ -80,7 +80,7 @@ def getStatus():
                 td = tstamp2 - tstamp1
             td_mins = int(round(td.total_seconds()))
             #print(td_mins)
-            if td_mins>80:
+            if td_mins>800000:
                 mycol.delete_one(y)
                 #print(y["name"])
                 my_dict={"name":y["name"]}
