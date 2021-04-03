@@ -21,8 +21,7 @@ def sendToSLM(serviceName):
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
-
-    producer.send(topicName, serviceName.encode()).add_callback(on_send_success).add_errback(on_send_error) #send the name of failed service
+    producer.send(topicName, serviceName).add_callback(on_send_success).add_errback(on_send_error) #send the name of failed service
 
 def registerServices():
 
@@ -38,7 +37,7 @@ def registerServices():
 
 
      ##INsert into collections db
-     #insertone 
+     #i12nsertone 
 
 
 
