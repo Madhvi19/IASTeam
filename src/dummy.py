@@ -1,4 +1,12 @@
 import monitorInit as mon
 
-mon.monitor()
+#register service
+def registerService():
+    mon.register()
+    sendHeartBeat()
+#send heartbeat
+def sendHeartBeat():
+    mon.heartBeat()
 
+if(__name__)== "__main__":
+    registerService()
