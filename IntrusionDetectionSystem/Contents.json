@@ -1,7 +1,0 @@
-{   
-    "Application Name":"IntruderDetectionSystem",
-    "DeviceTypeDiscription":["InfraRed.json"],
-    "DeviceTypeClasses":["InfraRed.py"],
-    "MainFile":"Intruder.py",
-    "Dependencies":[]
-}

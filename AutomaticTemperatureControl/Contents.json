@@ -1,7 +1,0 @@
-{   
-    "Application Name":"AutomaticTemperatureControl",
-    "DeviceTypeDiscription":["Temperature.json"],
-    "DeviceTypeClasses":[],
-    "MainFile":"Control.py",
-    "Dependencies":[]
-}
