@@ -160,7 +160,7 @@ def setUpNewServer(serviceName):
         
         
         
-        # del freeNodes["Nodes"][0]
+        del freeNodes["Nodes"][0]
         
         file=open(avaialableNodes,"w")
         json.dump(freeNodes,file)
