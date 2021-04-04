@@ -106,7 +106,7 @@ def getStatus():
                 #print(y["name"])
                 my_dict={"name":y["name"]}
                 sendToSLM(my_dict)
-            time.sleep(10)
+            time.sleep(2)
         
 
 #Acts as pub and sends data to the SLM's topic in case of node failure

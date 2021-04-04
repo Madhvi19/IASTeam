@@ -1,0 +1,1 @@
+{"serviceName": "scheduler", "script_list": ["first.py"],"run_command":"python3 first.py"}

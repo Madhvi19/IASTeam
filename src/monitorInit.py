@@ -51,14 +51,12 @@ def heartBeat():
     data = {'status' : 'Alive',"name":name}
     while(True):
         producer.send(topic, value=data)
+        print("hearbeating...")
         # print("hello")
         sleep(5)
 
 
-def monitor():
-    tq=threading.Thread(target=heartBeat)
-    tq.start()
-    tq.join()
+
 
 
 

@@ -47,6 +47,7 @@ def sftpToNewNode(ftp_client,sourceFiles):
     
 
 def editServiceName(configFiles):
+    global count
     print("trying to open ",configFiles)
     configFileToRename=open(configFiles)
     
@@ -55,15 +56,19 @@ def editServiceName(configFiles):
     print(tempFile)
     tempName=tempFile["serviceName"]
     tempName=tempName+"_"+str(count)
+    count+=1
     print(tempName)
     print("old ",tempFile['serviceName'])
     tempFile['serviceName']=tempName
     print("new ",tempFile['serviceName'])
     configFileToRename.close()
-    print("opening ",configFiles)
+
+    #create a temp file to rename and then delete it
+    
+    print("opening temp file")
     
     
-    configFileRenamed=open(configFiles,"w")
+    configFileRenamed=open("tempfile.json","w")
     print(configFileRenamed)
     sta=json.dump(tempFile,configFileRenamed)
     print(sta)
@@ -100,7 +105,7 @@ def setUpNewServer(serviceName):
 
         
         ftp_client.close()
-        # print("done")
+        
         
         
         ssh_client.exec_command("python3 nodeUnit.py ")
@@ -110,18 +115,29 @@ def setUpNewServer(serviceName):
        #edit the json
         editServiceName(configFiles)
         
-
+        #copy the config files
         ftp_client=ssh_client.open_sftp()
-        ftp_client.put(configFiles,'conf/config.json')
+        ftp_client.put("tempfile.json",'conf/config.json')
         ftp_client.close()
+        os.remove("tempfile.json")
+
+
         print("phew!!! DONE")
 
-        
+        #get how to run the service
+        confRun=open(configFiles)
+        runService=json.load(confRun)
+
+
+
         #Run the code files
 
-        for entry in toStart:
-            print(entry)
-            ssh_client.exec_command("python3 "+entry)
+        stdin, stdout, stderr=ssh_client.exec_command(runService['run_command'])
+        print(stdout.readlines())
+        # print(stderr.readlines())
+        # for entry in toStart:
+        #     print(entry)
+        #     ssh_client.exec_command("python3 "+entry)
 
         
         ssh_client.close()
