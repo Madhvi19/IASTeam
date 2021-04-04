@@ -18,8 +18,11 @@ def onSendError(excp):
 def register():
     name = ""
     path = "conf/config.json"
-    config = json.loads(path)
+    with open(path, 'r') as j:
+        config = json.loads(j.read())
+    #config = json.loads(path)
     name = config['serviceName']
+    print(name)
     topic='toMonitorRegister'
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
@@ -37,7 +40,8 @@ def register():
 def heartBeat():
     name = ""
     path = "conf/config.json"
-    config = json.loads(path)
+    with open(path, 'r') as j:
+        config = json.loads(j.read())
     name = config['serviceName']
     topic='toMonitorHeartBeat'
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],

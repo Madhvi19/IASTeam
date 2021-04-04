@@ -163,7 +163,7 @@ def setUpNewServer(serviceName):
 
 def startService():
      
-    consumer = KafkaConsumer('startService',
+    consumer = KafkaConsumer('restartService',
     bootstrap_servers=['localhost:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
@@ -181,8 +181,10 @@ def startService():
             print("started server")
 
 
-setUpNewServer("scheduler")
-
+#setUpNewServer("scheduler")
+if __name__=="__main__":
+    th=threading.Thread(target=startService)
+    th.start()
 
 
     
