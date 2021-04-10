@@ -120,19 +120,6 @@ def get_(appid,sensorid,inputType):
             return response['val']
 
 def executeControl(appid,sensorid,control):
-< {"color": 99, "intensity": 3}
-\ No newline at end of file
----
-> {"color": 41, "intensity": 78}
-\ No newline at end of file
-diff -rw demo1/sensorManager/db/1 IASTeam/src/demo1/sensorManager/db/1
-1c1
-< {"color": 42, "intensity": 32}
-\ No newline at end of file
----
-> {"color": 56, "intensity": 84}
-\ No newline at end of file
-Only in IASTeam/src/demo1: serverLifeCycleMgr
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
     req = {}
     req['appid'] = appid
