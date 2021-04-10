@@ -1,0 +1,5 @@
+{
+"serviceName": "SensorManager", 
+"script_list": ["localRegistration.py"], 
+"run_command":"python3 sensormanager.py"
+} 

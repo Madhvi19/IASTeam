@@ -96,22 +96,39 @@ def appExit():
 #when we will be dealing with all the group id.
 def getSensorId(label):
     appInfo=json.load(open('scheduleConfig.json'))
-    bindingInfo=appInfo['Binding']
+    bindingInfo=appInfo['binding']
     return bindingInfo[label]
 
 
 
 #will be provided by vikram and pradeep.
-def get(appid,sensorid,nameOfInputField):
-    pass
+def get_(appid,sensorid,nameOfInputField):
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+    req = {}
+    req['appid'] = appid
+    req['sensorid'] = sensorid
+    req['inputType'] = inputType
+    consumer = KafkaConsumer('response',bootstrap_servers=['localhost:9092'],auto_offset_reset='latest',value_deserializer=lambda x: loads(x.decode('utf-8')))
+    producer.send('request',req)
+    for message in consumer:
+        response = message.value
+        if(response['appid'] == appid):
+            return response['val']
 
 def executeControl(appid,sensorid,controlParamenter):
-    pass
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+    req = {}
+    req['appid'] = appid
+    req['sensorid'] = sensorid
+    req['controlname'] = control['name']
+    req['param'] = control['parameter']
+     
+    producer.send("control",req)
 
 def get(label,field):
     appInfo=json.load(open('scheduleConfig.json'))
     appid=appInfo['appId']
-    return get(appid,getSensorId(label),field)
+    return get_(appid,getSensorId(label),field)
 
 def applyControl(label,field,dict):
     appInfo=json.load(open('scheduleConfig.json'))
