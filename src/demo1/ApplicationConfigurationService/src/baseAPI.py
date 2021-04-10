@@ -7,6 +7,10 @@ import time
 import requests
 import copy
 from kafka import KafkaProducer
+from kafka import KafkaConsumer
+from json import loads
+from json import dumps
+
 updateTimedelay=2*60
 class ApplicationHearBeatManeger(threading.Thread):
     def __init__(self):
@@ -102,7 +106,7 @@ def getSensorId(label):
 
 
 #will be provided by vikram and pradeep.
-def get_(appid,sensorid,nameOfInputField):
+def get_(appid,sensorid,inputType):
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
     req = {}
     req['appid'] = appid
@@ -115,7 +119,20 @@ def get_(appid,sensorid,nameOfInputField):
         if(response['appid'] == appid):
             return response['val']
 
-def executeControl(appid,sensorid,controlParamenter):
+def executeControl(appid,sensorid,control):
+< {"color": 99, "intensity": 3}
+\ No newline at end of file
+---
+> {"color": 41, "intensity": 78}
+\ No newline at end of file
+diff -rw demo1/sensorManager/db/1 IASTeam/src/demo1/sensorManager/db/1
+1c1
+< {"color": 42, "intensity": 32}
+\ No newline at end of file
+---
+> {"color": 56, "intensity": 84}
+\ No newline at end of file
+Only in IASTeam/src/demo1: serverLifeCycleMgr
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
     req = {}
     req['appid'] = appid
