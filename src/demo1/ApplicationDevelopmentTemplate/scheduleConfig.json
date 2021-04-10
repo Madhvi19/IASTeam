@@ -1,0 +1,23 @@
+{
+ "username"="nabhiraj",
+ "appName":"myApplication",
+ "appid":"xyzUniqueApplication",
+ "algorithms":{
+	"algorithm_1":{
+		"startTime":[0:14,11:45,15:46],
+		"duration":[2:1,0:30,4:12],
+		"day"=["monday","sunday","friday"],
+        	"binding":{
+	 		"label_1":"sensor_id1",
+	 		"label_2":"sensor_id2",
+	 		"label_3":"sensor_id3"
+			   }
+			},
+	"algorithm_2":{
+				
+	},
+	"algorithm_3:"{
+				
+	}
+	}
+}

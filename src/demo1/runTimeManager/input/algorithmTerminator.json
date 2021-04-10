@@ -1,0 +1,9 @@
+{
+"action":"stop",
+"userName":"nabhiraj", 
+"appName":"myApplication",
+"appId":"xyzUniqueApplication",
+"algorithmName":"algorithm_1",
+"globalId":"11",
+"localId":"67"
+}

@@ -1,0 +1,1 @@
+{"serviceName": "localRegistration", "script_list": ["localRegistration.py"],"run_command":"python3 localRegistration.py"}

@@ -1,0 +1,8 @@
+Module: Dashboard
+port: 9001
+
+Module: Application Repository
+port: 9002
+
+Module: Application Scheduler
+port: 9003
