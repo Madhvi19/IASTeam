@@ -1,0 +1,11 @@
+{
+"name":"Bulb",
+"sensors":{
+	"color":"int",
+	"intensity":"float"
+	},
+"controls":{
+	"changeColor":{"color_r":"int","color_g":"int","color_b":"int"},
+	"changeIntensity":{"intensity":"int"}
+	}
+}

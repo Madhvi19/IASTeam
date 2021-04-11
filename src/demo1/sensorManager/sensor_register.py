@@ -5,8 +5,8 @@ from ConnectMongo import connectMongo
 
 # sensor Type
 bulb = {
-    # "name":"Bulb",
-    "Bulb":{
+    "name":"Bulb",  ## sensor type name
+    "sensors":{
         "color":"int",
         "intensity":"float"
         },

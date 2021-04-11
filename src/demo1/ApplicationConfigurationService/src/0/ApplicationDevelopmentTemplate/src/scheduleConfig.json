@@ -1,1 +1,1 @@
-{"action": "run", "userName": "nabhiraj", "appName": "app", "appId": "484", "algorithmName": "app", "globalId": "115", "localId": "0", "binding": {"label_1": "sensor_id1", "label_2": "sensor_id2", "label_3": "sensor_id3"}}
+{"action": "run", "userName": "nabhiraj", "appName": "app", "appId": "374", "algorithmName": "app", "globalId": "197", "localId": "0", "binding": {"primary_label": "0", "secondy_label": "1"}}

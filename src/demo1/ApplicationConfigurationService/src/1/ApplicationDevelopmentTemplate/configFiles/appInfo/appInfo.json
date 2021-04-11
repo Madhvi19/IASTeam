@@ -1,0 +1,5 @@
+{
+"Algorithms":["app.py"],
+"sensorType":["Bulb.json"],
+"sensorTypeClass":["Bulb.py"]
+}

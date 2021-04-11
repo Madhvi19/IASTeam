@@ -17,11 +17,11 @@ HOST = '127.0.0.1'
 PORT = 7006
 
 #register service
-defregisterService():
+def registerService():
     mon.register()
 
 #send heartbeat
-defsendHeartBeat():
+def sendHeartBeat():
     mon.heartBeat()
  
 os.system('python3 clean.py')  ## cleaned on every invoke

@@ -1,11 +1,11 @@
 {
     "userName":"nabhiraj",
     "appName":"app",
-    "appId":"492",
+    "appId":"374",
     "algorithms":{
        "app":{
-           "startTime":["11.04.2021 01:00:00"],
-           "endTime":["11.04.2021 05:00:00"],
+           "startTime":["11.04.2021 10:00:00"],
+           "endTime":["11.04.2021 12:00:00"],
                "binding":{
                 "primary_label":"0",
                 "secondy_label":"1"

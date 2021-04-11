@@ -43,26 +43,36 @@ def registerServices():
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
         collection = client.numtest.numtest
         for message in consumer:
             #print(message)
             
-            print("Hello")
-            print("val "+message.value)
+            print("Hello you have registered ")
             #if len(message.value)==2:
             # mess = message.value['number']
+
+
+
             name = message.value['name']
-            # timestamp=message.value['time']
-            mes={"name":name}
-            present=0
-            for y in mycol.find({"name":name}):
-                present=1
-                print("present.")
-            if(present==0):
-                x=collection.insert_one(mes)
-                print(x.inserted_id)
-            # print(x.inserted_id)                      ##INsert into collections db
+            print("name!!!"+name)
+            
+
+
+            timestamp=message.value['time']
+            mes={"time":timestamp,"name":name}
+            # present=0
+            # for y in mycol.find({"name":name}):
+            #     present=1
+            #     print("present.")
+            # if(present==0):
+            #     x=collection.insert_one(mes)
+            #     print(x.inserted_id)
+
+
+
+            x=collection.insert_one(mes)
+            print(x.inserted_id)                      ##INsert into collections db
             #print('{} added to {}'.format(mes, collection))
         
 
@@ -76,24 +86,24 @@ def checkHeartBeat():
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
         collection = client.numtest.numtest
     
         for message in consumer:
-            print("mess=",message.value)
+            # print("mess=",message.value)
             name = message.value['name']
             # print("name is:"+str(name))
-            timestamp = (message.timestamp)
-            # timestamp=message.value['time']
+            # timestamp = (message.timestamp)
+            timestamp=message.value['time']
             # print("Timestamp is:"+str(timestamp))
             x=collection.update_one({'name':name},{"$set":{"time":timestamp}})
-            # print(x)
+            print(x)
 
 
 #in a thread
 
 def getStatus():
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
     mydb = myclient["numtest"]
     mycol=mydb["numtest"]
 
@@ -102,15 +112,15 @@ def getStatus():
         n=now.split(".")
         for y in mycol.find():
             # print("Row:"+str(y))
-            ts=datetime.fromtimestamp(int(str(y["time"][0:-3])))
+            ts=datetime.fromtimestamp(int(str(y["time"])))
             fmt = '%Y-%m-%d %H:%M:%S'
             tstamp1 = datetime.strptime(str(n[0]), fmt)
             tstamp2 = datetime.strptime(str(ts), fmt)
-            print("name , Time-1:"+y["name"]+str(tstamp1))
-            print("Time-2:"+str(tstamp2))
+            # print("name , Time-1:"+y["name"]+str(tstamp1))
+            # print("Time-2:"+str(tstamp2))
             td = tstamp1 - tstamp2
             td_mins = int(round(td.total_seconds()))
-            print("Time-diff:"+str(td_mins))
+            # print("Time-diff:"+str(td_mins))
             if td_mins>30:
                 print("Oops threshold crossed for "+y["name"]+str(td_mins))
                 var=mycol.delete_one(y)
