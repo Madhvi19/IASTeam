@@ -36,8 +36,8 @@ def getPathToService(serviceName):
     return sourceFiles,configFiles
 
 
-def sftpToNewNode(ftp_client,sourceFiles):
-    ftp_client.put(pathToNodeUNit,pathToNodeUNit)
+def sftpToNewNode(ftp_client,sourceFiles,destination):
+    # ftp_client.put(pathToNodeUNit,pathToNodeUNit)
     toStart=[]
     
     for files in listdir(sourceFiles):
@@ -47,7 +47,7 @@ def sftpToNewNode(ftp_client,sourceFiles):
         try:
             toStart.append(files)
             finalSourcePath=os.path.join(sourceFiles,files)
-            ftp_client.put(finalSourcePath,"src/"+files)
+            ftp_client.put(finalSourcePath,destination+files)
         except:
             continue
     return toStart
@@ -103,19 +103,20 @@ def setUpNewServer(serviceName):
         ssh_client =paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh_client.connect(hostname=ip,port=port,username=username,password=password)
-        ssh_client.exec_command('mkdir src')
-        ssh_client.exec_command('mkdir conf')
+        ssh_client.exec_command('mkdir '+serviceName)
+        ssh_client.exec_command('mkdir '+serviceName+'/src')
+        ssh_client.exec_command('mkdir '+serviceName+'/conf')
         
         ftp_client=ssh_client.open_sftp()
-
-        toStart=sftpToNewNode(ftp_client,sourceFiles)
+        destination=serviceName+'/src/'
+        toStart=sftpToNewNode(ftp_client,sourceFiles,destination)
 
         
         ftp_client.close()
         
         
         
-        ssh_client.exec_command("python3 nodeUnit.py ")
+        # ssh_client.exec_command("python3 nodeUnit.py ")
         
         
 
@@ -124,7 +125,7 @@ def setUpNewServer(serviceName):
         
         #copy the config files
         ftp_client=ssh_client.open_sftp()
-        ftp_client.put("tempfile.json",'conf/config.json')
+        ftp_client.put("tempfile.json",serviceName+'/conf/config.json')
         ftp_client.close()
         os.remove("tempfile.json")
 
@@ -139,7 +140,24 @@ def setUpNewServer(serviceName):
 
         #Run the code files
 
+        print(" serviceName: "+serviceName)
+        print("command"+'cd '+serviceName+'/src')
+        stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command'])
+        for line in iter(stdout.readline, ""):
+             print(line, end="")
+        print("&&&&&&&&&&&&&&&")
+        print(runService['run_command'])
+
+        filename=runService['run_command'].split(" ")[1].strip()
+        print("filename is ",filename)
+        # print('gonna run python '+serviceName+'/src/'+filename)
+        # stdin, stdout, stderr=ssh_client.exec_command('python '+serviceName+'/src/'+filename)
         stdin, stdout, stderr=ssh_client.exec_command(runService['run_command'])
+        for line in iter(stderr.readline, ""):
+             print(line, end="")
+        for line in iter(stdout.readline, ""):
+             print(line, end="")
+        
         print("running the src files")
         # /print(stdout.readlines())
         # print(stderr.readlines())

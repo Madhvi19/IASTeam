@@ -1,0 +1,3 @@
+{"serviceName": "scheduler", "script_list": ["upload1.py"],"run_command":"python scheduler.py"}
+
+

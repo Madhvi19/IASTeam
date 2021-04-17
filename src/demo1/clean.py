@@ -6,4 +6,9 @@ records.delete_many({})
 print('scheduler documents suhaaa.....')
 records=db.rtmInfo
 records.delete_many({})
+
 print('rtm documents suhaaa.....')
+
+records=db.numtest
+records.delete_many({})
+print("cleared monitoring db")

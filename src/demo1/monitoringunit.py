@@ -111,7 +111,7 @@ def getStatus():
         now=str(datetime.now())
         n=now.split(".")
         for y in mycol.find():
-            # print("Row:"+str(y))
+            print("Row:"+str(y))
             ts=datetime.fromtimestamp(int(str(y["time"])))
             fmt = '%Y-%m-%d %H:%M:%S'
             tstamp1 = datetime.strptime(str(n[0]), fmt)
