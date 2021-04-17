@@ -1,8 +1,13 @@
 #now we will write a custom application.
 import baseAPI
+import room
 import time
+import Bulb
 baseAPI.appInit()
-while True:
-    time.sleep(4)
-    print('running the application')
+myroom=room('joke')
+numBulb=myroom.getSensorCount('Bulb')
+for i in range(numBulb):
+    tempLabel=myroom.getSensorLabel('Bulb',i)
+    b=Bulb(tempLabel)
+    print(b.getcolor())
 baseAPI.appExit()

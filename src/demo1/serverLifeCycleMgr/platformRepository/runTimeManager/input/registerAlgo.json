@@ -1,0 +1,16 @@
+{
+    "action":"register",
+    "userName":"nabhiraj", 
+    "appName":"myApplication",
+    "appId":"xyzUniqueApplication",
+    "algorithmName":"algorithm_1",
+    "globalId":"11",
+    "localId":"67",
+    "timestamp":3738.89,
+    "processId":"1123",
+    "binding":{
+        "label_1":"sensor_id1",
+        "label_2":"sensor_id2",
+        "label_3":"sensor_id3"
+    }
+}

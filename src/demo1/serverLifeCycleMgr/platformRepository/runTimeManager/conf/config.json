@@ -1,0 +1,3 @@
+{"serviceName": "runTimeManager", "script_list": ["upload1.py"],"run_command":"python3 rtm.py"}
+
+
