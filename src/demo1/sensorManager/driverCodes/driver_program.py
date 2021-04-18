@@ -24,8 +24,8 @@ s = {
     "sensorName" : "SensorName",
     "sensorid" : "abc",
     "sensorurl" : "<public-IP of intermediate server>",
-    "Location" : "<A1:A2:A3....>",
-    "sensorType" : "speaker"
+    "sensorType" : "speaker",
+    "description":"this is the 4th bulb in himalaya room number 3"
 }
 response = requests.post("http://localhost:5000/registerInstance/", json=json.dumps(s)).json()
 response = requests.post("http://localhost:5000/registerType/",json=json.dumps(speaker)).json()

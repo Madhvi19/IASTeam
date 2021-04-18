@@ -1,7 +1,4 @@
-
 from pymongo import MongoClient
-
-# sensor_id -> sensor url
 
 class ConnectMongo(object):
     def __init__(self):
@@ -17,8 +14,7 @@ class ConnectMongo(object):
         AllSensorTypes = []
         sensorTypes = list(self.SensorType.find({}))
         for i in sensorTypes:
-            keys = list(i.keys())
-            AllSensorTypes.append(keys[1])
+            AllSensorTypes.append(i['name'])
         return AllSensorTypes
     
     def checkSensorID(self, SensorInstance):
@@ -39,7 +35,7 @@ class ConnectMongo(object):
     def SensorTypeRegistration(self, sensorType):
         # Check if the sensor type name exists
         sensorTypesPresent = self.GetAllSensorTypes()
-        sensor_type = list(sensorType.keys())[0]
+        sensor_type = sensorType['name']
         if(sensor_type in sensorTypesPresent):
             return [False, "Sensor type with this name is already Registered"]
         # Register This sensor Type
@@ -50,15 +46,16 @@ class ConnectMongo(object):
         sensorTypesPresent = self.GetAllSensorTypes()
         SensorType = SensorInstance["sensorType"]
         SensorInstance["sensorid"] = self.GetSensorID()
+        print(sensorTypesPresent)
         if(SensorType not in sensorTypesPresent):
             return [False, "Sensor type with this name is Not Avilable, Please Register this sensor type first"]
         self.SensorInstance.insert_one(SensorInstance)
         return [True, "Successfully Added Sensor", SensorInstance["sensorid"]]
 
-    def getSensorURL(self, sensorID):
-        sensorInstance = list(self.SensorInstance.find({"sensorid" : sensorID}))
-        if(len(sensorInstance) == 0):
-            return "invalid sensor id"
-        return sensorInstance[0]["sensorurl"]
+    #def getSensorURL(self, sensorID):
+        #sensorInstance = list(self.SensorInstance.find({"sensorid" : sensorID}))
+        #if(len(sensorInstance) == 0):
+            #return "invalid sensor id"
+        #return sensorInstance[0]["sensorurl"]
 
 connectMongo = ConnectMongo()

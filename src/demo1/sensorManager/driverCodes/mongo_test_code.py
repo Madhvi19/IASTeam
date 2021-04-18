@@ -3,7 +3,8 @@
 from ConnectMongo import connectMongo
 
 speaker = {
-    "speaker_new_2" : {
+    "name" : "Speaker"
+    "sensors" : {
         "seek" : "int",
         "volume" : "float",
         "play" : "boolean",
@@ -28,5 +29,7 @@ s = {
     "sensorType" : "speaker_new_2"
 }
 
-response = requests.post("http://localhost:5000/registerInstance/", json=json.dumps(s)).json()
-response = requests.post("http://localhost:5000/registerType/",json=json.dumps(speaker)).json()
+#response = requests.post("http://localhost:5000/registerInstance/", json=json.dumps(s)).json()
+#response = requests.post("http://localhost:5000/registerType/",json=json.dumps(speaker)).json()
+
+connectMongo
