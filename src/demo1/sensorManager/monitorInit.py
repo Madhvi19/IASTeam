@@ -16,7 +16,7 @@ def onSendError(excp):
 
 def register():
     name = ""
-    path = "conf/config.json"
+    path = "../conf/config.json"
     with open(path, 'r') as j:
         config = json.loads(j.read())
     #config = json.loads(path)
@@ -43,7 +43,7 @@ def register():
 
 def heartBeat():
     name = ""
-    path = "conf/config.json"
+    path = "../conf/config.json"
     with open(path, 'r') as j:
         config = json.loads(j.read())
     name = config['serviceName']
