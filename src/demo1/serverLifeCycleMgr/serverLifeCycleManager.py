@@ -82,7 +82,7 @@ def restartServicesHelper():
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
 
-        topicNaame='machineAddr'
+        topicName='machineAddr'
        
         
         data={"name":value,"ip":ip,"port":22,"username":"test","password":"test"}
