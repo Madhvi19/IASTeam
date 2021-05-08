@@ -24,6 +24,23 @@ avaialableNodes='freeNodeList.json'
 pathToNodeUNit='nodeUnit.py'
 
 
+def createLogs():
+    consumer = KafkaConsumer('logging',
+                                bootstrap_servers=['kafka:9092'],
+                                auto_offset_reset='earliest',
+                                enable_auto_commit=True,
+                                group_id='my-group',
+                                value_deserializer=lambda x: loads(x.decode('utf-8')))    
+    while(True):
+        for message in consumer:
+            serviceName = message.value['serviceName']
+            state = message.value['loggingInfo']
+
+    
+
+            f = open(serviceName, "a")
+            f.write(state)
+            f.close()
 
 
 
@@ -258,16 +275,17 @@ def restartService():
     enable_auto_commit=True,
     group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
-    for message in consumer:
-        # for message in consumer:
-        print(message)
-        details = message.value
-        #get the name of the service first eg: Sscheduler_1 now truncate the _num part to get the original name to find the corresponding code and config details
-        serviceName=details['name']
-        serviceName=serviceName.split("_")[0]
-        status=setUpNewServer(serviceName)
-        if(status=="OK"):
-            print("started server")
+    while(True):
+        for message in consumer:
+            # for message in consumer:
+            print(message)
+            details = message.value
+            #get the name of the service first eg: Sscheduler_1 now truncate the _num part to get the original name to find the corresponding code and config details
+            serviceName=details['name']
+            serviceName=serviceName.split("_")[0]
+            status=setUpNewServer(serviceName)
+            if(status=="OK"):
+                print("started server")
 
 
 #setUpNewServer("scheduler")

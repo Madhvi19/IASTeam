@@ -22,11 +22,10 @@ def createContainer(serviceName):
 
 
 
-
 def totellstartService():
     print("In start")
     topic='startService'
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+    producer = KafkaProducer(bootstrap_servers=['kafka:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
     data="Done"
@@ -74,27 +73,28 @@ def restartServicesHelper():
     print("In helper")
     client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
     collection = client.initializer.initializer
-    for message in consumer:
-        print(message)
-        value=message.value
-        ip=createContainer(serviceName=value)
-        producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
-                         value_serializer=lambda x: 
-                         dumps(x).encode('utf-8'))
+    while(True):
+        for message in consumer:
+            print(message)
+            value=message.value
+            ip=createContainer(serviceName=value)
+            producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                            value_serializer=lambda x: 
+                            dumps(x).encode('utf-8'))
 
-        topicName='machineAddr'
-       
+            topicName='machineAddr'
         
-        data={"name":value,"ip":ip,"port":22,"username":"test","password":"test"}
-        collection.insert_one(data)
-        producer.send(topicName,value=data) 
-        
+            
+            data={"name":value,"ip":ip,"port":22,"username":"test","password":"test"}
+            collection.insert_one(data)
+            producer.send(topicName,value=data) 
+            
 
 
 
        
 if __name__=="__main__":
-    #th=threading.Thread(target=restartServicesHelper)
-    #th.start()
-    tq=threading.Thread(target=initialiseNodes)
-    tq.start()
+   
+    initialiseNodes()
+    restartServicesHelper()
+    
