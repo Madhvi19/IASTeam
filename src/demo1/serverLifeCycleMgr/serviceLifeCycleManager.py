@@ -18,18 +18,18 @@ import time
 import os 
 from os import walk
 from os import listdir
-import pymongo
+from pymongo import MongoClient
 sourceDir='platformRepository'
 avaialableNodes='freeNodeList.json' 
 pathToNodeUNit='nodeUnit.py'
-
+os.system('rm test.txt')
+os.system('rm tes.txt')
 
 def createLogs():
     consumer = KafkaConsumer('logging',
                                 bootstrap_servers=['kafka:9092'],
                                 auto_offset_reset='earliest',
                                 enable_auto_commit=True,
-                                group_id='my-group',
                                 value_deserializer=lambda x: loads(x.decode('utf-8')))    
     while(True):
         for message in consumer:
@@ -110,7 +110,6 @@ def createClient():
                             bootstrap_servers=['kafka:9092'],
                             auto_offset_reset='earliest',
                             enable_auto_commit=True,
-                            group_id='my-group',
                             value_deserializer=lambda x: loads(x.decode('utf-8')))
     return consumer
 
@@ -136,7 +135,8 @@ def setUpNewServer(serviceName):
 
         sourceFiles,configFiles=getPathToService(serviceName)
 
-        myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+        #myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+        myclient = MongoClient('mongodb+srv://anuragsahu:321@sensors.r1efb.mongodb.net/sensorRegistry?retryWrites=true&w=majority')
         mydb = myclient["initializer"]
         mycol=mydb["initializer"]
         
@@ -206,7 +206,7 @@ def setUpNewServer(serviceName):
 
         print(" serviceName: "+serviceName)
         print("command"+'cd '+serviceName+'/src')
-        stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command'],get_pty=True)
+        stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command']+' &')
         # for line in iter(stdout.readline, ""):
         #      print(line, end="")
         # print("&&&&&&&&&&&&&&&")
@@ -228,9 +228,6 @@ def setUpNewServer(serviceName):
         # for entry in toStart:
         #     print(entry)
         #     ssh_client.exec_command("python3 "+entry)
-
-        
-        ssh_client.close()
 
 
         
@@ -273,7 +270,6 @@ def restartService():
     bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
-    group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
     while(True):
         for message in consumer:
@@ -292,15 +288,19 @@ def restartService():
 if __name__=="__main__":
     ''' To initialise all the services'''
     startServices.getSignal()
-
+    
+    h = open('test.txt','a+')
+    h.write('slcm getsignal done')
     ''' Restart service '''
     th=threading.Thread(target=restartService)
     th.start()
+    h.write('slcm restart service done')
     
     ''' Logging '''
     th2=threading.Thread(target=createLogs)
     th2.start()
-
+    h.write('slcm logs done')
+    h.close()
     
 
 
