@@ -1,245 +1,100 @@
-
-#acts as a consumer of monitoringUnit
-#get the corresponding  code from the platform repo
-# Go to a freely avaialble server by ssh
-# run nodeUnit.py on it
-
-#run the failed service on the new node
-
-
-
+import pymongo
+import threading
+from kafka import KafkaProducer
 from kafka import KafkaConsumer
+from time import sleep
+from json import dumps
 from json import loads
 import json
-import threading
-import paramiko
-import argparse
-import time
-import os 
-from os import walk
-from os import listdir
-sourceDir='platformRepository'
-avaialableNodes='freeNodeList.json' 
-pathToNodeUNit='nodeUnit.py'
+import os
+import subprocess
 
 
-
-count=1
-def getPathToService(serviceName):
-    global count
-    finalPath=os.path.join(sourceDir,serviceName)
-    print("final path "+finalPath+" 999")
-    sourceFiles=os.path.join(finalPath,'src')
-    configFiles=os.path.join(finalPath,'conf/config.json')
-    print(sourceFiles)
-    print(configFiles)
-    return sourceFiles,configFiles
-
-
-def sftpToNewNode(ftp_client,sourceFiles,destination):
-    # ftp_client.put(pathToNodeUNit,pathToNodeUNit)
-    toStart=[]
-    
-    for files in listdir(sourceFiles):
-
-        print("filesss ",files)
-        
-        try:
-            toStart.append(files)
-            finalSourcePath=os.path.join(sourceFiles,files)
-            ftp_client.put(finalSourcePath,destination+files)
-        except:
-            continue
-    return toStart
-    
-
-def editServiceName(configFiles):
-    global count
-    print("trying to open ",configFiles)
-    configFileToRename=open(configFiles)
-    
-    tempFile=json.load(configFileToRename)
-    print("tempFile")
-    print(tempFile)
-    tempName=tempFile["serviceName"]
-    tempName=tempName+"_"+str(count)
-    count+=1
-    print(tempName)
-    print("old ",tempFile['serviceName'])
-    tempFile['serviceName']=tempName
-    print("new ",tempFile['serviceName'])
-    configFileToRename.close()
-
-    #create a temp file to rename and then delete it
-    
-    print("opening temp file")
-    
-    
-    configFileRenamed=open("tempfile.json","w")
-    print(configFileRenamed)
-    sta=json.dump(tempFile,configFileRenamed)
-    print(sta)
-    configFileRenamed.close()
-
-def setUpNewServer(serviceName):
-    
-    status="OK"
-    file=open(avaialableNodes)
-    freeNodes=json.load(file)
-    if( len(freeNodes["Nodes"])==0):
-
-        status = "NOT OK"
-    
-    else:
-        
-        
-
-        sourceFiles,configFiles=getPathToService(serviceName)
-        ip = freeNodes["Nodes"][0]["ip"]
-        username = freeNodes["Nodes"][0]["username"]
-        password = freeNodes["Nodes"][0]["password"]
-        port = freeNodes["Nodes"][0]["port"]
-        print(username," ",password," ",port," ",ip)
-        ssh_client =paramiko.SSHClient()
-        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(hostname=ip,port=port,username=username,password=password)
-        ssh_client.exec_command('mkdir '+serviceName)
-        ssh_client.exec_command('mkdir '+serviceName+'/src')
-        ssh_client.exec_command('mkdir '+serviceName+'/conf')
-        
-        ftp_client=ssh_client.open_sftp()
-        destination=serviceName+'/src/'
-        toStart=sftpToNewNode(ftp_client,sourceFiles,destination)
-
-        
-        ftp_client.close()
-        
-        
-        
-        # ssh_client.exec_command("python3 nodeUnit.py ")
-        
-        
-
-       #edit the json
-        editServiceName(configFiles)
-        
-        #copy the config files
-        ftp_client=ssh_client.open_sftp()
-        ftp_client.put("tempfile.json",serviceName+'/conf/config.json')
-        ftp_client.close()
-        os.remove("tempfile.json")
-
-
-        print("copied the config and src files")
-
-        #get how to run the service
-        confRun=open(configFiles)
-        runService=json.load(confRun)
-
-
-
-        #Run the code files
-
-        print(" serviceName: "+serviceName)
-        print("command"+'cd '+serviceName+'/src')
-        stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command'])
-        for line in iter(stdout.readline, ""):
-             print(line, end="")
-        print("&&&&&&&&&&&&&&&")
-        print(runService['run_command'])
-
-        filename=runService['run_command'].split(" ")[1].strip()
-        print("filename is ",filename)
-        # print('gonna run python '+serviceName+'/src/'+filename)
-        # stdin, stdout, stderr=ssh_client.exec_command('python '+serviceName+'/src/'+filename)
-        stdin, stdout, stderr=ssh_client.exec_command(runService['run_command'])
-        for line in iter(stderr.readline, ""):
-             print(line, end="")
-        for line in iter(stdout.readline, ""):
-             print(line, end="")
-        
-        print("running the src files")
-        # /print(stdout.readlines())
-        # print(stderr.readlines())
-        # for entry in toStart:
-        #     print(entry)
-        #     ssh_client.exec_command("python3 "+entry)
-
-        
-        ssh_client.close()
-
-
-        
-
-
-
-     
+def createContainer(serviceName):
+     os.system('docker build -t krishnapriya11/'+serviceName+' .')
+     os.system('docker run -d -P --name '+serviceName+' krishnapriya11/'+serviceName)
+     output = subprocess.check_output('docker inspect -f \'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' '+serviceName, shell=True)
+     return ((output).decode().strip())
 
 
 
 
 
-        
-        
-        
-        
-        
-        
-        
-        # : freeNodes["Nodes"][0]
-        
-        file=open(avaialableNodes,"w")
-        json.dump(freeNodes,file)
-        file.close()
-    
-        return status
-
-        
-        
-    
-
-
-    
 
 
 
-def startService():
-     
-    consumer = KafkaConsumer('restartService',
+def totellstartService():
+    print("In start")
+    topic='startService'
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                         value_serializer=lambda x: 
+                         dumps(x).encode('utf-8'))
+    data="Done"
+    print(data)
+    producer.send(topic, value=data)
+    print("End of start Service")
+
+
+def initialiseNodes():
+    consumer = KafkaConsumer('fromInitializer',
     bootstrap_servers=['localhost:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
+
+    #client = pymongo.MongoClient('localhost:27017')
+    client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    collection = client.initializer.initializer
+    totellstartService()
     for message in consumer:
-        # for message in consumer:
         print(message)
-        details = message.value
-        #get the name of the service first eg: Sscheduler_1 now truncate the _num part to get the original name to find the corresponding code and config details
-        serviceName=details['name']
-        serviceName=serviceName.split("_")[0]
-        status=setUpNewServer(serviceName)
-        if(status=="OK"):
-            print("started server")
-
-
-#setUpNewServer("scheduler")
-if __name__=="__main__":
-    th=threading.Thread(target=startService)
-    th.start()
-
-
+        key=message.value.keys()
+        for k in key:
+            ip = message.value[k]["ip"]
+            cont=message.value[k]["name"]
+            usr=message.value[k]["username"]
+            passwd=message.value[k]["password"]
+            port=message.value[k]["port"]
+            # ip="172.17.0.2"
+            # cont="MonitoringUnit"
+            # port=22
+            # usr="test"
+            # passwd="test"
+            mes={"name":cont,"ip":ip,"port":port,"username":usr,"password":passwd,"Services":[]}
+            collection.insert_one(mes)
     
+def restartServicesHelper():
+    consumer = KafkaConsumer('toServerLCM',
+    bootstrap_servers=['localhost:9092'],
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='my-group',
+    value_deserializer=lambda x: loads(x.decode('utf-8')))
+    print("In helper")
+    client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    collection = client.initializer.initializer
+    for message in consumer:
+        print(message)
+        value=message.value
+        ip=createContainer(serviceName=value)
+        producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                         value_serializer=lambda x: 
+                         dumps(x).encode('utf-8'))
+
+        topicNaame='machineAddr'
+       
+        
+        data={"name":value,"ip":ip,"port":22,"username":"test","password":"test"}
+        collection.insert_one(data)
+        producer.send(topicName,value=data) 
+        
 
 
 
-#acts as a consumer of monitoringUnit
-#get the corresponding  code from the platform repo
-# Go to a freely avaialble server by ssh
-# run nodeUnit.py on it
-
-#run the failed service on the new node
-
-
-
-
+       
+if __name__=="__main__":
+    #th=threading.Thread(target=restartServicesHelper)
+    #th.start()
+    tq=threading.Thread(target=initialiseNodes)
+    tq.start()

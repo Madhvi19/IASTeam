@@ -12,3 +12,7 @@ print('rtm documents suhaaa.....')
 records=db.numtest
 records.delete_many({})
 print("cleared monitoring db")
+
+records=db.initializer
+records.delete_many({})
+print("cleared init db")
