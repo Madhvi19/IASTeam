@@ -1,2 +1,0 @@
-{"serviceName": "Deployer", "script_list": ["upload1.py"],"run_command":"python3 deployer.py"}
-
