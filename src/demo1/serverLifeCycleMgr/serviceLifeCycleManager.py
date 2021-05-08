@@ -6,8 +6,8 @@
 
 #run the failed service on the new node
 
-import startServices
 
+import startServices
 from kafka import KafkaConsumer
 from json import loads
 import json
@@ -22,44 +22,6 @@ import pymongo
 sourceDir='platformRepository'
 avaialableNodes='freeNodeList.json' 
 pathToNodeUNit='nodeUnit.py'
-
-
-
-'''
-Kafka Topic Name: logging
-json file structure:
-{
-    'serviceName':'deployer'
-    'loggingInfo':'state of the component'    
-}
-
- 
-
-'''
-
- 
-
-def createLogs():
-    consumer = KafkaConsumer('logging',
-                                bootstrap_servers=['localhost:9092'],
-                                auto_offset_reset='earliest',
-                                enable_auto_commit=True,
-                                group_id='my-group',
-                                value_deserializer=lambda x: loads(x.decode('utf-8')))    
-    for message in consumer:
-        serviceName = message.value['serviceName']
-        state = message.value['loggingInfo']
-
- 
-
-        f = open(serviceName+".txt", "a")
-        f.write(state)
-        f.close()
-
- 
-
-
-
 
 
 
@@ -122,6 +84,25 @@ def editServiceName(configFiles):
     print(sta)
     configFileRenamed.close()
 
+def createClient():
+    '''
+        A kafka client listena on 'machineAddr' topic 
+    '''
+
+    consumer = KafkaConsumer('machineAddr',
+                            bootstrap_servers=['localhost:9092'],
+                            auto_offset_reset='earliest',
+                            enable_auto_commit=True,
+                            group_id='my-group',
+                            value_deserializer=lambda x: loads(x.decode('utf-8')))
+    return consumer
+
+def getMachineAddr(consumer):
+    for message in consumer:
+        info = message.value
+        return info['ip'], info['port'], info['username'], info['password']
+
+
 def setUpNewServer(serviceName):
     
     status="OK"
@@ -151,20 +132,15 @@ def setUpNewServer(serviceName):
                     print(var)
                     break
         #request a new server
-
+        consumer = createClient()
         producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
 
-        topicNaame='toServerLCM'
+        topicName='toServerLCM'
         producer.send(topicName, serviceName) 
-        
-
-
-
-
-
-
+            
+        ip, port, username, password = getMachineAddr(consumer)
 
 
         # ip = freeNodes["Nodes"][0]["ip"]
@@ -178,8 +154,6 @@ def setUpNewServer(serviceName):
         ssh_client.exec_command('mkdir '+serviceName)
         ssh_client.exec_command('mkdir '+serviceName+'/src')
         ssh_client.exec_command('mkdir '+serviceName+'/conf')
-        ssh_client.exec_command('mkdir '+serviceName+'/log')
-
         
         ftp_client=ssh_client.open_sftp()
         destination=serviceName+'/src/'
@@ -187,7 +161,6 @@ def setUpNewServer(serviceName):
 
         
         ftp_client.close()
-        
         
         
         # ssh_client.exec_command("python3 nodeUnit.py ")
@@ -205,15 +178,6 @@ def setUpNewServer(serviceName):
 
 
         print("copied the config and src files")
-        
-        #Copy log files
-        ftp_client=ssh_client.open_sftp()
-        ftp_client.put(serviceName+".txt",'log/'+serviceName+'.txt')
-        ftp_client.close()
-
-
-
-
 
         #get how to run the service
         confRun=open(configFiles)
@@ -318,7 +282,6 @@ if __name__=="__main__":
     ''' Logging '''
     th2=threading.Thread(target=createLogs)
     th2.start()
-
 
     
 

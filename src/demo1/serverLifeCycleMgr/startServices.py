@@ -13,8 +13,8 @@ from os import listdir
 from kafka import KafkaConsumer
 sourceDir='platformRepository'
 
-servicesToStart = ["MonitoringUnit","scheduler", "deployer", "appRepo", "sensorManager", "dashboard",  "runtimeManager"]
-
+siervicesToStart = ["MonitoringUnit","scheduler", "deployer", "appRepo", "sensorManager", "dashboard",  "runtimeManager"]
+# servicesToStart=[]
 def getSignal():
     # '''
     #     A kafka consumer, gets signal to run all the services
