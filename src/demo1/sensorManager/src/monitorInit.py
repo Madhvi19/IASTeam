@@ -1,9 +1,10 @@
+
 import threading
 from kafka import KafkaProducer
 from time import sleep
 from json import dumps
 import json
-from datetime import datetime 
+
 
 
 def onSendSuccess(record_metadata):
@@ -28,16 +29,8 @@ def register():
                          dumps(x).encode('utf-8'))
 
     
-    ## Get the name & config from the config file of each comp
-    
-    # group = "group"
-    now=datetime.now()
-    now_epoch=str(now.timestamp())
-    now_epoch=now_epoch.split(".")[0]
-    data = {'status' : 'Alive',"name":name,"time":now_epoch}
 
-    # data = {'name' :name}
-    print("my name is ",name)
+    data = {'name' :name}
     producer.send(topic, value=data).add_callback(onSendSuccess).add_errback(onSendError)
     sleep(5)
 
@@ -51,21 +44,16 @@ def heartBeat():
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
-    
+
+    data = {'status' : 'Alive',"name":name}
     while(True):
-
-        now=datetime.now()
-        now_epoch=str(now.timestamp())
-        now_epoch=now_epoch.split(".")[0]
-        data = {'status' : 'Alive',"name":name,"time":now_epoch}
-
-        
         producer.send(topic, value=data)
         print("hearbeating...")
         # print("hello")
         sleep(5)
 
-
+if __name__=="__main__":
+    register()
 
 
 
