@@ -22,7 +22,7 @@ def getSignal():
     # '''
     global servicesToStart
     consumer = KafkaConsumer('startService',
-                            bootstrap_servers=['localhost:9092'],
+                            bootstrap_servers=['kafka:9092'],
                             auto_offset_reset='earliest',
                             enable_auto_commit=True,
                             group_id='my-group',
@@ -54,7 +54,7 @@ def sftpToNewNode(ftp_client,sourceFiles,destination):
     
 
 def getMachineAddr(serviceName):
-    # client = pymongo.MongoClient('localhost:27017')
+    # client = pymongo.MongoClient('kafka:27017')
     # collection = client.initializer.initializer
     # for document in collection.find():
     #   print(document)
@@ -89,7 +89,7 @@ def getPathToService(serviceName):
     return sourceFiles,configFiles
 
 def updateDB(serviceName):
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
     mydb = myclient["initializer"]
     mycol = mydb["initializer"]
 

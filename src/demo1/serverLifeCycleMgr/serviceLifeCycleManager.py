@@ -107,7 +107,7 @@ def createClient():
     '''
 
     consumer = KafkaConsumer('machineAddr',
-                            bootstrap_servers=['localhost:9092'],
+                            bootstrap_servers=['kafka:9092'],
                             auto_offset_reset='earliest',
                             enable_auto_commit=True,
                             group_id='my-group',
@@ -150,7 +150,7 @@ def setUpNewServer(serviceName):
                     break
         #request a new server
         consumer = createClient()
-        producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+        producer = KafkaProducer(bootstrap_servers=['kafka:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
 
@@ -270,7 +270,7 @@ def setUpNewServer(serviceName):
 def restartService():
      
     consumer = KafkaConsumer('restartService',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',

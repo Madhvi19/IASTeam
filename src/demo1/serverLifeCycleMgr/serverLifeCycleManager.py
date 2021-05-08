@@ -36,13 +36,13 @@ def totellstartService():
 
 def initialiseNodes():
     consumer = KafkaConsumer('fromInitializer',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-    #client = pymongo.MongoClient('localhost:27017')
+    #client = pymongo.MongoClient('kafka:27017')
     client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
     collection = client.initializer.initializer
     totellstartService()
@@ -65,7 +65,7 @@ def initialiseNodes():
     
 def restartServicesHelper():
     consumer = KafkaConsumer('toServerLCM',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',
@@ -78,7 +78,7 @@ def restartServicesHelper():
             print(message)
             value=message.value
             ip=createContainer(serviceName=value)
-            producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+            producer = KafkaProducer(bootstrap_servers=['kafka:9092'],
                             value_serializer=lambda x: 
                             dumps(x).encode('utf-8'))
 
