@@ -1,4 +1,5 @@
-import pymongo
+#import pymongo
+from pymongo import MongoClient
 from datetime import datetime
 from json import loads
 from json import dumps
@@ -12,8 +13,9 @@ from os import walk
 from os import listdir
 from kafka import KafkaConsumer
 sourceDir='platformRepository'
-
-siervicesToStart = ["MonitoringUnit","scheduler", "deployer", "appRepo", "sensorManager", "dashboard",  "runtimeManager"]
+os.system('rm test.txt')
+os.system('rm tes.txt')
+servicesToStart = ["MonitoringUnit","scheduler", "deployer", "appRepo", "sensorManager", "dashboard",  "runtimeManager"]
 # servicesToStart=[]
 def getSignal():
     # '''
@@ -25,12 +27,16 @@ def getSignal():
                             bootstrap_servers=['kafka:9092'],
                             auto_offset_reset='earliest',
                             enable_auto_commit=True,
-                            group_id='my-group',
                             value_deserializer=lambda x: loads(x.decode('utf-8')))
     for message in consumer:
-        print(message)
+        #print(message)
+        h = open('tes.txt','a+')
+        h.write(str(message.value))
+        h.write('\n')
+        h.close()
         for service in servicesToStart:
-                startService(service)
+            startService(service)
+        break
 
     # for service in servicesToStart:
     #   startService(service)
@@ -59,7 +65,8 @@ def getMachineAddr(serviceName):
     # for document in collection.find():
     #   print(document)
     
-    myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    #myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    myclient=MongoClient('mongodb+srv://anuragsahu:321@sensors.r1efb.mongodb.net/sensorRegistry?retryWrites=true&w=majority')
     mydb = myclient["initializer"]
     mycol = mydb["initializer"]
 
@@ -89,7 +96,8 @@ def getPathToService(serviceName):
     return sourceFiles,configFiles
 
 def updateDB(serviceName):
-    myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    #myclient = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    myclient=MongoClient('mongodb+srv://anuragsahu:321@sensors.r1efb.mongodb.net/sensorRegistry?retryWrites=true&w=majority')
     mydb = myclient["initializer"]
     mycol = mydb["initializer"]
 
@@ -115,13 +123,15 @@ def startService(serviceName):
            into services[] in db
 
     '''
-    print("Service Name is", serviceName)
+    #print("Service Name is", serviceName)
+    h = open('test.txt','a+')
+    h.write("Service Name is"+str(serviceName)+'\n')
 
     sourceFiles,configFiles=getPathToService(serviceName)
-    print("sourceFiles= ",sourceFiles)
+    h.write("sourceFiles= "+sourceFiles)
 
     ip, port, username, password = getMachineAddr(serviceName)
-    print(username," ",password," ",port," ",ip)
+    h.write(username+" "+password+" "+str(port)+" "+ip)
 
     ssh_client =paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -144,21 +154,21 @@ def startService(serviceName):
     # os.remove("tempfile.json")
 
 
-    print("copied the config and src files")
+    h.write("copied the config and src files")
 
     confRun=open(configFiles)
     runService=json.load(confRun)
 
-    print(" serviceName: "+serviceName)
-    print("command"+'cd '+serviceName+'/src')
-    stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command'],get_pty=True)
+    h.write(" serviceName: "+serviceName)
+    h.write("command"+'cd '+serviceName+'/src')
+    stdin, stdout, stderr=ssh_client.exec_command('cd '+serviceName+'/src;'+runService['run_command']+' &')
 
 
     filename=runService['run_command'].split(" ")[1].strip()
-    print("filename is ",filename)
+    h.write("filename is "+filename)
     # print('gonna run python '+serviceName+'/src/'+filename)
     # stdin, stdout, stderr=ssh_client.exec_command('python '+serviceName+'/src/'+filename)
     # stdin, stdout, stderr=ssh_client.exec_command(runService['run_command'])
 
     updateDB(serviceName)
-    
+    h.close()
