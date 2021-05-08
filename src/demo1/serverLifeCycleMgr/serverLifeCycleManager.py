@@ -1,4 +1,5 @@
-import pymongo
+#import pymongo
+from pymongo import MongoClient
 import threading
 from kafka import KafkaProducer
 from kafka import KafkaConsumer
@@ -8,7 +9,8 @@ from json import loads
 import json
 import os
 import subprocess
-
+os.system('rm test.txt')
+os.system('rm tes.txt')
 
 def createContainer(serviceName):
      os.system('docker build -t krishnapriya11/'+serviceName+' .')
@@ -39,15 +41,18 @@ def initialiseNodes():
     bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
-    group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
 
     #client = pymongo.MongoClient('kafka:27017')
-    client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    #client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    client=MongoClient('mongodb+srv://anuragsahu:321@sensors.r1efb.mongodb.net/sensorRegistry?retryWrites=true&w=majority')
     collection = client.initializer.initializer
     totellstartService()
     for message in consumer:
-        print(message)
+        #print(message)
+        h = open('tes.txt','a+')
+        h.write(str(message.value))
+        h.close()
         key=message.value.keys()
         for k in key:
             ip = message.value[k]["ip"]
@@ -62,16 +67,17 @@ def initialiseNodes():
             # passwd="test"
             mes={"name":cont,"ip":ip,"port":port,"username":usr,"password":passwd,"Services":[]}
             collection.insert_one(mes)
+        break
     
 def restartServicesHelper():
     consumer = KafkaConsumer('toServerLCM',
     bootstrap_servers=['kafka:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
-    group_id='my-group',
     value_deserializer=lambda x: loads(x.decode('utf-8')))
     print("In helper")
-    client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    #client = pymongo.MongoClient("mongodb+srv://Test:Anurag@appregcluster.polvf.mongodb.net/numtest?retryWrites=true&w=majority")
+    client=MongoClient('mongodb+srv://anuragsahu:321@sensors.r1efb.mongodb.net/sensorRegistry?retryWrites=true&w=majority')
     collection = client.initializer.initializer
     while(True):
         for message in consumer:
@@ -96,5 +102,8 @@ def restartServicesHelper():
 if __name__=="__main__":
    
     initialiseNodes()
+    h = open('tes.txt','a+')
+    h.write('ended initialization')
+    h.close()
     restartServicesHelper()
     
